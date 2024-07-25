@@ -130,8 +130,7 @@ class NewWindow(QWidget):
         self.show()
         
         # added
-        print(result["name"])
-        evo_btn.connect(self.show_tree(result["name"]))
+        evo_btn.clicked.connect(lambda: self.show_tree(result["name"]))
        
     # added 
     @Slot()
