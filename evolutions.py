@@ -75,7 +75,7 @@ def sort_evo(list):
         str = (f'{list[0]} evolves into {list[1]}, and then {list[1]} evolves into {list[2]}')
         return str
     if len(list) == 4:
-        print(f'{list[0]} evolves into {list[1]}, and {list[1]} can evolve into {list[2]} or {list[3]}')
+        print(f'{list[0]} evolves into {list[1]}, and {list[1]} can evolve intpytho {list[2]} or {list[3]}')
         str = (f'{list[0]} evolves into {list[1]}, and {list[1]} can evolve into {list[2]} or {list[3]}')
         return str
     if len(list) == 5:
