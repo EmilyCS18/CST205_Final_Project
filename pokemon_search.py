@@ -2,6 +2,8 @@ import requests
 import urllib.request
 import sys
 from evolutions import get_tree, sort_evo, find_tree
+from moves import get_moves
+
 from PySide6.QtWidgets import (
     QApplication,
     QLabel,
@@ -23,6 +25,7 @@ def get_pokemon(pokemon: str):
         url = f"https://pokeapi.co/api/v2/pokemon/{pokemon}/"
         response = requests.get(url)
         data = response.json()
+        moves = [get_moves(move["move"]["name"]) for move in data["moves"][:2]]
         return {
             "name": data["name"],
             "id": data["id"],
@@ -30,6 +33,7 @@ def get_pokemon(pokemon: str):
             "weight": data["weight"],
             "types": [type_info["type"]["name"] for type_info in data["types"]],
             "sprite": data["sprites"]["front_default"],
+            "moves": moves
         }
     except:
         print("Invalid request, try again")
@@ -110,6 +114,18 @@ class NewWindow(QWidget):
         label = QLabel()
         label.pixmap = img_display
 
+        #Moves added 
+        moves_layout = QVBoxLayout()
+        for move in result['moves']:
+            move_label = QLabel(
+                f"Move: {move['name']}\n"
+                f"Type: {move['type']}\n"
+                f"Power: {move['power']}\n"
+                f"PP: {move['pp']}\n"
+                f"Accuracy: {move['accuracy']}\n"
+            )
+            moves_layout.add_widget(move_label)
+
         # added
         evo_btn = QPushButton('-- Evolutions --')
         
@@ -123,6 +139,8 @@ class NewWindow(QWidget):
         self.layout.add_widget(pokemon_type)
         self.layout.add_widget(pokemon_height)
         self.layout.add_widget(pokemon_weight)
+        # Moves
+        self.layout.add_layout(moves_layout)
         # added
         self.layout.add_widget(evo_btn)
         
