@@ -68,10 +68,16 @@ class MyWindow(QWidget):
         self.search_term.minimum_width = 250
         self.search_term.select_all()
 
+        #Emily Edits
+        self.category_dropdown = QComboBox()
+        self.category_dropdown.addItems(["Pokemon", "Berry"])
+
         search_btn = QPushButton("Search")
 
         vbox = QVBoxLayout()
         vbox.add_widget(title_label)
+        #Emily Edit
+        vbox.addWidget(self.category_dropdown)
         vbox.add_widget(self.search_term)
         vbox.add_widget(search_btn)
         self.set_layout(vbox)
