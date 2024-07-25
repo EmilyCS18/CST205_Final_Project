@@ -34,6 +34,16 @@ def get_pokemon(pokemon: str):
         print("Invalid request, try again")
 
 
+def get_evolutions(pokemon: str):
+    # a placeholder function for evolution getting
+    print("evolution not found")
+
+
+def get_berry(berry: str):
+    # a place holder function for getting a specific berry
+    print("Berry not found")
+
+
 def url_to_image(spirte_url: str) -> str:
     urllib.request.urlretrieve(spirte_url, "poke.png")
     return "poke.png"
@@ -64,7 +74,11 @@ class MyWindow(QWidget):
         self.palette = background_color
         title_label = QLabel("<h1>Pokemon Search</h1>")
 
-        self.search_term = QLineEdit("What pokemon are you curious about?")
+        search_choices = ["Search", "Pokemon", "Evolutions", "Berries", "??"]
+        self.search_choice_dropdown = QComboBox()
+        self.search_choice_dropdown.add_items(search_choices)
+
+        self.search_term = QLineEdit("What are you searching for?")
         self.search_term.minimum_width = 250
         self.search_term.select_all()
 
@@ -73,17 +87,25 @@ class MyWindow(QWidget):
         vbox = QVBoxLayout()
         vbox.add_widget(title_label)
         vbox.add_widget(self.search_term)
+        vbox.add_widget(self.search_choice_dropdown)
         vbox.add_widget(search_btn)
         self.set_layout(vbox)
         search_btn.clicked.connect(self.show_results)
 
     @Slot()
     def show_results(self):
-        pokemon = self.search_term.text
-        result = get_pokemon(pokemon)
-        img_name = url_to_image(result["sprite"])
-        self.new_win = NewWindow(pokemon, img_name, result)
-        self.new_win.show()
+        search = self.search_term.text
+
+        if self.search_choice_dropdown.current_text == "Pokemon":
+            result = get_pokemon(search)
+            img_name = url_to_image(result["sprite"])
+            self.new_win = pokemonDetailsWindow(img_name, result)
+            self.new_win.show()
+        elif self.search_choice_dropdown.current_text == "Evolutions":
+            # get info for evo lines and call the evoDetailsWindow
+            result = get_evolutions(search)
+        elif self.search_choice_dropdown.current_text == "Berries":
+            result = get_berry(search)
 
 
 """
@@ -97,14 +119,15 @@ found from a query about the berry
 """
 
 
-class NewWindow(QWidget):
-    def __init__(self, pokemon: str, img_name: str, result: dict):
+class pokemonDetailsWindow(QWidget):
+    def __init__(self, img_name: str, result: dict):
         super().__init__()
         pokemon_name = QLabel(f"<h1>{result["name"]}</h1>")
         pokemon_id = QLabel(f"Pokemon id: {result['id']}")
         pokemon_type = QLabel(f"Pokemon types: {result['types']}")
         pokemon_height = QLabel(f"Pokemon height: {result['height']}")
         pokemon_weight = QLabel(f"Pokemon weight: {result['weight']}")
+
         img_display = QPixmap(img_name)
         label = QLabel()
         label.pixmap = img_display
