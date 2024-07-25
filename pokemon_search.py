@@ -1,6 +1,7 @@
 import requests
 import urllib.request
 import sys
+from evolutions import get_tree, sort_evo, find_tree
 from PySide6.QtWidgets import (
     QApplication,
     QLabel,
@@ -109,6 +110,9 @@ class NewWindow(QWidget):
         label = QLabel()
         label.pixmap = img_display
 
+        # added
+        evo_btn = QPushButton('-- Evolutions --')
+        
         background_color = QColor("#ffc4ba")
         self.palette = background_color
 
@@ -119,8 +123,36 @@ class NewWindow(QWidget):
         self.layout.add_widget(pokemon_type)
         self.layout.add_widget(pokemon_height)
         self.layout.add_widget(pokemon_weight)
+        # added
+        self.layout.add_widget(evo_btn)
+        
         self.set_layout(self.layout)
+        self.show()
+        
+        # added
+        print(result["name"])
+        evo_btn.connect(self.show_tree(result["name"]))
+       
+    # added 
+    @Slot()
+    def show_tree(self, name):
+        self.evo_win = EvoWindow(name)
+        self.evo_win.show()
 
+# added
+class EvoWindow(QWidget):
+    def __init__(self, pokemon: str):
+        super().__init__()
+        treeID = find_tree(pokemon)
+        evo_names = get_tree(treeID)
+        evoLabel = QLabel(sort_evo(evo_names))
+        background_color = QColor("#ffc4ba")
+        self.palette = background_color
+        
+        self.layout = QVBoxLayout()
+        self.layout.add_widget(evoLabel)
+        self.set_layout(self.layout)
+    
 
 app = QApplication([])
 my_win = MyWindow()
