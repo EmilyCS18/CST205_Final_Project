@@ -1,7 +1,6 @@
 import requests
 from PySide6.QtWidgets import QWidget, QLabel, QVBoxLayout
 from PySide6.QtGui import QColor
-from PySide6.QtCore import Slot
 
 
 def get_berry(berry: str):
@@ -23,10 +22,19 @@ def get_berry(berry: str):
         print("Invalid request, try again")
 
 
+def get_all_berries():
+    try:
+        url = "https://pokeapi.co/api/v2/berry/"
+        response = requests.get(url)
+        data = response.json()
+        return [berry["name"] for berry in data["results"]]
+    except:
+        print("Invalid request, try again")
+
+
 class BerryDetailWindow(QWidget):
-    def __init__(self, berry: str):
+    def __init__(self, berry_info: dict):
         super().__init__()
-        berry_info = get_berry(berry)
         berry_name = QLabel(f"<h1>{berry_info['name']}</h1>")
         berry_id = QLabel(f"Berry id: {berry_info['id']}")
         growth_time = QLabel(f"Growth time: {berry_info['growth_time']}")
