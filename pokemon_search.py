@@ -1,6 +1,7 @@
 import requests
 import urllib.request
 import sys
+import random
 from evolutions import get_tree, sort_evo, find_tree
 from moves import get_moves
 from PySide6.QtWidgets import (
@@ -33,6 +34,29 @@ def get_pokemon(pokemon: str):
     except:
         print("Invalid request, try again")
 
+def get_pokemon_by_id(pokemon_id: int):
+    try:
+        url = f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}/"
+        response = requests.get(url)
+        data = response.json()
+        moves = [get_moves(move["move"]["name"]) for move in data["moves"][:2]]
+        return {
+            "name": data["name"],
+            "id": data["id"],
+            "height": data["height"],
+            "weight": data["weight"],
+            "types": [type_info["type"]["name"] for type_info in data["types"]],
+            "sprite": data["sprites"]["front_default"],
+            "moves": moves
+        }
+    except:
+        print("Invalid request, try again")
+
+def get_random_pokemon():
+    max_pokemon_id = 898  # Total number of Pokémon in the PokeAPI
+    random_id = random.randint(1, max_pokemon_id)
+    return get_pokemon_by_id(random_id)
+
 def url_to_image(sprite_url: str) -> str:
     urllib.request.urlretrieve(sprite_url, "poke.png")
     return "poke.png"
@@ -57,6 +81,22 @@ def get_berry(berry_name):
         "soil_dryness": data["soil_dryness"],
     }
     return berry_info
+
+"""
+this is the main screen, the first one that opens when you run the program
+maybe we adjust this to have a tab window, or a dropdown box that you can select a category from
+wouldnt be too hard to use a dropdown, because from there you just take the selected option and 
+use that in the url
+https://pokeapi.co/api/v2/{category}/{pokemon}/
+
+so if we are searching for a specific pokemon, the user selects "Pokemon" in the drowndown, and types 
+the pokemon name into the search bar, if they type "Pikachu" the link should look like:
+https://pokeapi.co/api/v2/pokemon/pikachu/
+and that info will be used to determine which type of window pops up showing details
+
+if the dropdown selection is "berry" then the berryDetailWindow class should be used
+
+"""
 
 class MyWindow(QWidget):
     def __init__(self):
@@ -88,10 +128,13 @@ class MyWindow(QWidget):
         vbox.addWidget(self.search_term)
         vbox.addWidget(search_btn)
         vbox.addWidget(self.berry_dropdown)  # Add the dropdown to the layout
+
         self.setLayout(vbox)
 
         search_btn.clicked.connect(self.show_results)
         self.berry_dropdown.currentIndexChanged.connect(self.show_berry_details)
+
+        self.show_random_pokemon()
 
     @Slot()
     def show_results(self):
@@ -108,6 +151,15 @@ class MyWindow(QWidget):
             berry_info = get_berry(selected_berry)
             self.berry_win = BerryDetailWindow(berry_info)
             self.berry_win.show()
+
+    def show_random_pokemon(self):
+        result = get_random_pokemon()
+        img_name = url_to_image(result["sprite"])
+        pixmap = QPixmap(img_name)
+        pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)  # Scale the image to make it larger
+        label = QLabel()
+        label.setPixmap(pixmap)
+        self.layout().insertWidget(1, label)  # Insert the image below the title label
 
 class BerryDetailWindow(QWidget):
     def __init__(self, berry_info):
@@ -147,6 +199,16 @@ class BerryDetailWindow(QWidget):
         self.layout.addWidget(berry_soil_dryness)
         self.setLayout(self.layout)
 
+"""
+This class below opens a new window for pokemon, maybe we make a separate
+class for each possible window that we open? so this class below instead can be called 
+something like "pokemonDetailWindow"
+
+and another would be "berryDetailWindow", and would display the appropriate info
+found from a query about the berry
+
+"""
+
 class NewWindow(QWidget):
     def __init__(self, pokemon: str, img_name: str, result: dict):
         super().__init__()
@@ -177,6 +239,7 @@ class NewWindow(QWidget):
             move_label.setStyleSheet("color: black;")
             moves_layout.addWidget(move_label)
 
+        # added
         evo_btn = QPushButton('-- Evolutions --')
 
         background_color = QColor("#ffc4ba")
@@ -194,18 +257,21 @@ class NewWindow(QWidget):
         self.layout.addWidget(pokemon_weight)
         # Moves
         self.layout.addLayout(moves_layout)
+        #added
         self.layout.addWidget(evo_btn)
 
         self.setLayout(self.layout)
         self.show()
 
+        #added
         evo_btn.clicked.connect(lambda: self.show_tree(result["name"]))
 
+    #added
     @Slot()
     def show_tree(self, name):
         self.evo_win = EvoWindow(name)
         self.evo_win.show()
-
+#added
 class EvoWindow(QWidget):
     def __init__(self, pokemon: str):
         super().__init__()
