@@ -16,6 +16,24 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QColor, QPixmap
 from PySide6.QtCore import Slot, Qt
 
+"""
+Title: Pokemon Info Search
+Description: A python program that utilizes PokeAPI to allow a user to search for different
+things and see relevant information based on what they searched for
+Authors: Emily Contreras, Parker Mcanelly, Miguel Gonzalez, Claire Longsworth
+Date: 07/26/2024
+Class: CST205 Multimedia and Design
+
+"""
+
+
+"""
+This function is what is searching for the pokemon using the API, and selecting
+which information is relevant to our program that we want to display. 
+Parameter: The name of the pokemon the user is searching for
+"""
+
+
 def get_pokemon(pokemon: str):
     try:
         url = f"https://pokeapi.co/api/v2/pokemon/{pokemon}/"
@@ -29,10 +47,18 @@ def get_pokemon(pokemon: str):
             "weight": data["weight"],
             "types": [type_info["type"]["name"] for type_info in data["types"]],
             "sprite": data["sprites"]["front_default"],
-            "moves": moves
+            "moves": moves,
         }
     except:
         print("Invalid request, try again")
+
+
+"""
+Functions the same as the get_pokemon function, uses API calls to 
+receive desired information about a pokemon, however this uses pokemon ID rather than name
+Parameter: The name of the pokemon the user is searching for
+"""
+
 
 def get_pokemon_by_id(pokemon_id: int):
     try:
@@ -47,25 +73,55 @@ def get_pokemon_by_id(pokemon_id: int):
             "weight": data["weight"],
             "types": [type_info["type"]["name"] for type_info in data["types"]],
             "sprite": data["sprites"]["front_default"],
-            "moves": moves
+            "moves": moves,
         }
     except:
         print("Invalid request, try again")
+
+
+"""
+Random Pokemon generating function
+"""
+
 
 def get_random_pokemon():
     max_pokemon_id = 898  # Total number of Pokémon in the PokeAPI
     random_id = random.randint(1, max_pokemon_id)
     return get_pokemon_by_id(random_id)
 
+
+"""
+This function allows us to take a link of an image and create
+and image with that link
+Param: url to image
+Returns: name of image created
+"""
+
+
 def url_to_image(sprite_url: str) -> str:
     urllib.request.urlretrieve(sprite_url, "poke.png")
     return "poke.png"
+
+
+"""
+Creates a list of all berries in pokemon using pokeAPI
+Returns: a list of all berries
+"""
+
 
 def get_all_berries():
     url = "https://pokeapi.co/api/v2/berry/"
     response = requests.get(url)
     data = response.json()
     return [berry["name"] for berry in data["results"]]
+
+
+"""
+A function that searches for a berry given its name
+param: the name of the berry to search for
+returns: dictionary of berry info
+"""
+
 
 def get_berry(berry_name):
     url = f"https://pokeapi.co/api/v2/berry/{berry_name}/"
@@ -82,21 +138,15 @@ def get_berry(berry_name):
     }
     return berry_info
 
-"""
-this is the main screen, the first one that opens when you run the program
-maybe we adjust this to have a tab window, or a dropdown box that you can select a category from
-wouldnt be too hard to use a dropdown, because from there you just take the selected option and 
-use that in the url
-https://pokeapi.co/api/v2/{category}/{pokemon}/
-
-so if we are searching for a specific pokemon, the user selects "Pokemon" in the drowndown, and types 
-the pokemon name into the search bar, if they type "Pikachu" the link should look like:
-https://pokeapi.co/api/v2/pokemon/pikachu/
-and that info will be used to determine which type of window pops up showing details
-
-if the dropdown selection is "berry" then the berryDetailWindow class should be used
 
 """
+Main QtWindow of application, generates a random pokemon sprite to display the user,
+and gives a textbox prompt for them to enter the pokemon they are searching for.
+Also allows the user to search for information on berries by giving them a dropdown 
+menu option of what berry they want info on, once selected, a new window opens and shows 
+the info about chosen berry.
+"""
+
 
 class MyWindow(QWidget):
     def __init__(self):
@@ -156,10 +206,13 @@ class MyWindow(QWidget):
         result = get_random_pokemon()
         img_name = url_to_image(result["sprite"])
         pixmap = QPixmap(img_name)
-        pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)  # Scale the image to make it larger
+        pixmap = pixmap.scaled(
+            200, 200, Qt.KeepAspectRatio
+        )  # Scale the image to make it larger
         label = QLabel()
         label.setPixmap(pixmap)
         self.layout().insertWidget(1, label)  # Insert the image below the title label
+
 
 class BerryDetailWindow(QWidget):
     def __init__(self, berry_info):
@@ -167,13 +220,17 @@ class BerryDetailWindow(QWidget):
 
         berry_name = QLabel(f"<h1>{berry_info['name']}</h1>")
         berry_name.setStyleSheet("color: black;")
-        berry_description = QLabel("Berries are small fruits that can provide HP and status condition restoration, stat enhancement, and even damage negation when eaten by Pokémon.")
+        berry_description = QLabel(
+            "Berries are small fruits that can provide HP and status condition restoration, stat enhancement, and even damage negation when eaten by Pokémon."
+        )
         berry_description.setStyleSheet("color: black;")
         berry_growth_time = QLabel(f"Growth Time: {berry_info['growth_time']}")
         berry_growth_time.setStyleSheet("color: black;")
         berry_max_harvest = QLabel(f"Max Harvest: {berry_info['max_harvest']}")
         berry_max_harvest.setStyleSheet("color: black;")
-        berry_natural_gift_type = QLabel(f"Natural Gift Type: {berry_info['natural_gift_type']}")
+        berry_natural_gift_type = QLabel(
+            f"Natural Gift Type: {berry_info['natural_gift_type']}"
+        )
         berry_natural_gift_type.setStyleSheet("color: black;")
         berry_size = QLabel(f"Size: {berry_info['size']}")
         berry_size.setStyleSheet("color: black;")
@@ -199,15 +256,6 @@ class BerryDetailWindow(QWidget):
         self.layout.addWidget(berry_soil_dryness)
         self.setLayout(self.layout)
 
-"""
-This class below opens a new window for pokemon, maybe we make a separate
-class for each possible window that we open? so this class below instead can be called 
-something like "pokemonDetailWindow"
-
-and another would be "berryDetailWindow", and would display the appropriate info
-found from a query about the berry
-
-"""
 
 class NewWindow(QWidget):
     def __init__(self, pokemon: str, img_name: str, result: dict):
@@ -228,7 +276,7 @@ class NewWindow(QWidget):
 
         # Moves added
         moves_layout = QVBoxLayout()
-        for move in result['moves']:
+        for move in result["moves"]:
             move_label = QLabel(
                 f"Move: {move['name']}\n"
                 f"Type: {move['type']}\n"
@@ -240,7 +288,7 @@ class NewWindow(QWidget):
             moves_layout.addWidget(move_label)
 
         # added
-        evo_btn = QPushButton('-- Evolutions --')
+        evo_btn = QPushButton("-- Evolutions --")
 
         background_color = QColor("#ffc4ba")
         self.setAutoFillBackground(True)
@@ -257,21 +305,23 @@ class NewWindow(QWidget):
         self.layout.addWidget(pokemon_weight)
         # Moves
         self.layout.addLayout(moves_layout)
-        #added
+        # added
         self.layout.addWidget(evo_btn)
 
         self.setLayout(self.layout)
         self.show()
 
-        #added
+        # added
         evo_btn.clicked.connect(lambda: self.show_tree(result["name"]))
 
-    #added
+    # added
     @Slot()
     def show_tree(self, name):
         self.evo_win = EvoWindow(name)
         self.evo_win.show()
-#added
+
+
+# added
 class EvoWindow(QWidget):
     def __init__(self, pokemon: str):
         super().__init__()
@@ -289,6 +339,7 @@ class EvoWindow(QWidget):
         self.layout = QVBoxLayout()
         self.layout.addWidget(evoLabel)
         self.setLayout(self.layout)
+
 
 app = QApplication([])
 my_win = MyWindow()
