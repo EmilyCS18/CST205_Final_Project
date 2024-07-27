@@ -16,6 +16,8 @@ from PySide6.QtCore import Slot
 from PySide6.QtCore import Qt
 from __feature__ import snake_case, true_property
 
+# file made by Parker Mcanelly
+
 def get_tree(tree: int):
     try:
         url = f"https://pokeapi.co/api/v2/evolution-chain/{tree}/"

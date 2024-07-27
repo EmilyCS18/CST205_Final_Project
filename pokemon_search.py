@@ -31,6 +31,8 @@ Class: CST205 Multimedia and Design
 This function is what is searching for the pokemon using the API, and selecting
 which information is relevant to our program that we want to display. 
 Parameter: The name of the pokemon the user is searching for
+
+Done by: Claire Longsworth
 """
 
 
@@ -57,6 +59,8 @@ def get_pokemon(pokemon: str):
 Functions the same as the get_pokemon function, uses API calls to 
 receive desired information about a pokemon, however this uses pokemon ID rather than name
 Parameter: The name of the pokemon the user is searching for
+
+Done by: Claire Longsworth
 """
 
 
@@ -80,7 +84,8 @@ def get_pokemon_by_id(pokemon_id: int):
 
 
 """
-Random Pokemon generating function
+Random Pokemon generating function that is shown in the home page 
+Done by: Emily Contreras
 """
 
 
@@ -95,6 +100,8 @@ This function allows us to take a link of an image and create
 and image with that link
 Param: url to image
 Returns: name of image created
+
+Done by: Claire Longsworth
 """
 
 
@@ -106,6 +113,8 @@ def url_to_image(sprite_url: str) -> str:
 """
 Creates a list of all berries in pokemon using pokeAPI
 Returns: a list of all berries
+
+Done by: Emily Contreras
 """
 
 
@@ -120,6 +129,8 @@ def get_all_berries():
 A function that searches for a berry given its name
 param: the name of the berry to search for
 returns: dictionary of berry info
+
+Done by: Emily Contreras
 """
 
 
@@ -145,6 +156,11 @@ and gives a textbox prompt for them to enter the pokemon they are searching for.
 Also allows the user to search for information on berries by giving them a dropdown 
 menu option of what berry they want info on, once selected, a new window opens and shows 
 the info about chosen berry.
+
+- random pokemon made by Emily Contreras
+- textbox prompt made by Claire Longsworth 
+- berry dropdown & berry stuff made by Emily Contreras
+- evolution button made by Parker Mcanelly 
 """
 
 

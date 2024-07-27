@@ -17,6 +17,8 @@ from PySide6.QtCore import Slot
 from PySide6.QtCore import Qt
 from __feature__ import snake_case, true_property
 
+# file made by Miguel Gonzalez
+
 
 def get_moves(moves: str):
     try:
